@@ -4,14 +4,7 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.widget.LinearLayout
-import android.widget.LinearLayout.HORIZONTAL
-import android.widget.LinearLayout.VERTICAL
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textfield.TextInputLayout
 import dev.dextra.newsapp.R
 import dev.dextra.newsapp.api.model.Source
 import dev.dextra.newsapp.api.model.enums.Category
@@ -23,14 +16,15 @@ import dev.dextra.newsapp.feature.sources.adapter.CustomArrayAdapter
 import dev.dextra.newsapp.feature.sources.adapter.SourcesListAdapter
 import kotlinx.android.synthetic.main.activity_sources.app_bar
 import kotlinx.android.synthetic.main.activity_sources.category_select
-import kotlinx.android.synthetic.main.activity_sources.category_select_layout
 import kotlinx.android.synthetic.main.activity_sources.country_select
-import kotlinx.android.synthetic.main.activity_sources.country_select_layout
-import kotlinx.android.synthetic.main.activity_sources.sources_filters
 import kotlinx.android.synthetic.main.activity_sources.sources_list
 import org.koin.android.viewmodel.ext.android.viewModel
 
-
+/**
+ * [BaseListActivity] to be launched when the application starts.
+ * This class is responsible to present the [Source] content as a list, using the [SourcesViewModel]
+ * to have access to the model.
+ */
 class SourcesActivity : BaseListActivity(), SourcesListAdapter.SourceListAdapterItemListener {
 
     private val sourcesViewModel: SourcesViewModel by viewModel()
@@ -43,24 +37,31 @@ class SourcesActivity : BaseListActivity(), SourcesListAdapter.SourceListAdapter
         get() = sources_list
 
     private var viewAdapter: SourcesListAdapter = SourcesListAdapter(this)
-    private var viewManager: RecyclerView.LayoutManager = GridLayoutManager(this, 1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_sources)
-        setupView()
-        loadSources()
         super.onCreate(savedInstanceState)
+        setupView()
+        setupData()
     }
 
-    private fun setupList() {
-        sources_list.apply {
-            setHasFixedSize(true)
-            layoutManager = viewManager
-            adapter = viewAdapter
-        }
+    override fun onClick(source: Source) {
+        val intent = Intent(this, NewsActivity::class.java)
+        intent.putExtra(NEWS_ACTIVITY_SOURCE, source)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
-    private fun loadSources() {
+    override fun executeRetry() {
+        setupData()
+    }
+
+    private fun setupData() {
+        observeSource()
+        observeNetworkState()
+        sourcesViewModel.loadSources()
+    }
+
+    private fun observeSource() {
         sourcesViewModel.sources.observe(this, Observer {
             viewAdapter.apply {
                 clear()
@@ -71,85 +72,42 @@ class SourcesActivity : BaseListActivity(), SourcesListAdapter.SourceListAdapter
                 app_bar.setExpanded(true)
             }
         })
+    }
 
+    private fun observeNetworkState() {
         sourcesViewModel.networkState.observe(this, networkStateObserver)
-
-        sourcesViewModel.loadSources()
     }
 
     private fun setupView() {
-        configureAutocompletes()
+        setupCountrySelector()
+        setupCategorySelector()
         setupList()
     }
 
-    private fun configureAutocompletes() {
-        val countryAdapter = CustomArrayAdapter(
-            this,
-            R.layout.select_item,
-            Country.values().toMutableList()
-        )
-        country_select.setAdapter(countryAdapter)
-        country_select.keyListener = null
-        country_select.setOnItemClickListener { parent, _, position, id ->
-            val item = parent.getItemAtPosition(position)
-            if (item is Country) {
-                sourcesViewModel.selectedCountry = item
-            }
-        }
-
-        category_select.setAdapter(
-            CustomArrayAdapter(
-                this,
-                R.layout.select_item,
-                Category.values().toMutableList()
-            )
-        )
-        category_select.keyListener = null
-        category_select.setOnItemClickListener { parent, _, position, _ ->
-            val item = parent.getItemAtPosition(position)
-            if (item is Category) {
-                sourcesViewModel.selectedCategory = item
+    private fun setupCategorySelector() {
+        category_select.also {
+            it.setAdapter(CustomArrayAdapter(this, R.layout.select_item, Category.values().toMutableList()))
+            it.keyListener = null
+            it.setOnItemClickListener { parent, _, position, _ ->
+                sourcesViewModel.selectedCategory = parent.getItemAtPosition(position) as? Category ?: Category.ALL
             }
         }
     }
 
-    override fun onClick(source: Source) {
-        val intent = Intent(this, NewsActivity::class.java)
-        intent.putExtra(NEWS_ACTIVITY_SOURCE, source)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
-
-    override fun setupPortrait() {
-        setListColumns(1)
-        sources_filters.orientation = VERTICAL
-        configureFilterLayoutParams(country_select_layout, MATCH_PARENT, 0f)
-        configureFilterLayoutParams(category_select_layout, MATCH_PARENT, 0f)
-    }
-
-    override fun setupLandscape() {
-        setListColumns(2)
-        sources_filters.orientation = HORIZONTAL
-        configureFilterLayoutParams(country_select_layout, 0, 1f)
-        configureFilterLayoutParams(category_select_layout, 0, 1f)
-    }
-
-    private fun configureFilterLayoutParams(textInput: TextInputLayout, width: Int, weight: Float) {
-        val layoutParams = textInput.layoutParams
-        if (layoutParams is LinearLayout.LayoutParams) {
-            layoutParams.width = width
-            layoutParams.weight = weight
+    private fun setupCountrySelector() {
+        country_select.also {
+            it.setAdapter(CustomArrayAdapter(this, R.layout.select_item, Country.values().toMutableList()))
+            it.keyListener = null
+            it.setOnItemClickListener { parent, _, position, _ ->
+                sourcesViewModel.selectedCountry = parent.getItemAtPosition(position) as? Country ?: Country.ALL
+            }
         }
     }
 
-    private fun setListColumns(columns: Int) {
-        val layoutManager = sources_list.layoutManager
-        if (layoutManager is GridLayoutManager) {
-            layoutManager.spanCount = columns
-            viewAdapter.notifyDataSetChanged()
+    private fun setupList() {
+        sources_list.apply {
+            setHasFixedSize(true)
+            adapter = viewAdapter
         }
-    }
-
-    override fun executeRetry() {
-        loadSources()
     }
 }

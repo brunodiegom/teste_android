@@ -30,13 +30,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorPrimaryDark"
-                android:orientation="vertical"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
                 android:padding="@dimen/small_margin">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/country_select_layout"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
                     android:hint="@string/country"
                     android:labelFor="@id/country_select">
 
@@ -49,8 +51,9 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/category_select_layout"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
                     android:hint="@string/category"
                     android:labelFor="@id/category_select">
 
@@ -72,7 +75,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="1"
+        app:spanCount="2"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/item_source" />
 

@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import dev.dextra.newsapp.api.model.Source
 import dev.dextra.newsapp.api.model.enums.Category
 import dev.dextra.newsapp.api.model.enums.Country
-import dev.dextra.newsapp.api.model.extension.getValue
+import dev.dextra.newsapp.api.model.extension.getSourceValue
 import dev.dextra.newsapp.api.repository.NewsRepository
 import dev.dextra.newsapp.base.BaseViewModel
 import dev.dextra.newsapp.base.NetworkState
@@ -53,8 +53,8 @@ class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewMod
         setState(NetworkState.RUNNING)
         addDisposable(
             newsRepository.getSources(
-                selectedCountry.getValue(),
-                selectedCategory.getValue()
+                selectedCountry.getSourceValue(),
+                selectedCategory.getSourceValue()
             ).subscribe({
                 _sources.postValue(it.sources)
                 setState(getResponseState(it.sources))

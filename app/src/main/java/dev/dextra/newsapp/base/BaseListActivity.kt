@@ -1,7 +1,6 @@
 package dev.dextra.newsapp.base
 
 import android.app.Dialog
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
@@ -31,8 +30,6 @@ abstract class BaseListActivity : AppCompatActivity() {
 
         setupEmptyState(emptyStateTitle, emptyStateSubTitle)
         setupErrorState(errorStateTitle, errorStateSubTitle)
-
-        configureOrientation(resources.configuration.orientation)
     }
 
     private fun setupEmptyState(title: Int, subtitle: Int) {
@@ -69,21 +66,6 @@ abstract class BaseListActivity : AppCompatActivity() {
 
     fun hideLoading() {
         loadingDialog?.dismiss()
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration?) {
-        super.onConfigurationChanged(newConfig)
-
-        newConfig?.orientation?.let {
-            configureOrientation(it)
-        }
-    }
-
-    private fun configureOrientation(orientation: Int) {
-        when (orientation) {
-            Configuration.ORIENTATION_LANDSCAPE -> setupLandscape()
-            else -> setupPortrait()
-        }
     }
 
     protected val networkStateObserver = Observer<NetworkState> { networkState ->
@@ -125,10 +107,6 @@ abstract class BaseListActivity : AppCompatActivity() {
         onBackPressed()
         return true
     }
-
-    protected abstract fun setupLandscape()
-
-    protected abstract fun setupPortrait()
 
     protected abstract fun executeRetry()
 }

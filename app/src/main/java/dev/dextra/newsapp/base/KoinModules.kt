@@ -7,17 +7,16 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
-
-val viewModelModules = module {
-    viewModel { SourcesViewModel(newsRepository = get()) }
-}
-
 val serviceModules = module {
     single { EndpointService() }
 }
 
 val repositoryModules = module {
     single { NewsRepository(get()) }
+}
+
+val viewModelModules = module {
+    viewModel { SourcesViewModel(newsRepository = get()) }
 }
 
 val appComponent: List<Module> = listOf(viewModelModules, serviceModules, repositoryModules)

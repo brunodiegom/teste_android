@@ -17,7 +17,6 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".feature.sources.SourcesActivity"
-            android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
             android:launchMode="singleTop">
             <intent-filter>
@@ -28,7 +27,6 @@
         </activity>
         <activity
             android:name=".feature.news.NewsActivity"
-            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_news"
             android:parentActivityName=".feature.sources.SourcesActivity">
             <meta-data
