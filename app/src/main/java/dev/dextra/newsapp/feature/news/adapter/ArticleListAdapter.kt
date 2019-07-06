@@ -8,7 +8,10 @@ import android.widget.ArrayAdapter
 import dev.dextra.newsapp.R
 import dev.dextra.newsapp.api.model.Article
 import dev.dextra.newsapp.feature.news.NewsActivity
-import kotlinx.android.synthetic.main.item_article.view.*
+import kotlinx.android.synthetic.main.item_article.view.article_author
+import kotlinx.android.synthetic.main.item_article.view.article_date
+import kotlinx.android.synthetic.main.item_article.view.article_description
+import kotlinx.android.synthetic.main.item_article.view.article_name
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -31,12 +34,12 @@ class ArticleListAdapter(
             convertView2 = LayoutInflater.from(getContext()).inflate(R.layout.item_article, parent, false)
         }
 
-        if(convertView2!=null){
-            convertView2.rootView.article_name.text = article.title
-            convertView2.rootView.article_description.text = article.description
-            convertView2.rootView.article_author.text = article.author
-            convertView2.rootView.article_date.text = dateFormat.format(parseFormat.parse(article.publishedAt))
-            convertView2.setOnClickListener{listener.onClick(article)}
+        if (convertView2 != null) {
+            convertView2.rootView.article_name.text = article?.title
+            convertView2.rootView.article_description.text = article?.description
+            convertView2.rootView.article_author.text = article?.author
+            convertView2.rootView.article_date.text = dateFormat.format(parseFormat.parse(article?.publishedAt))
+            convertView2.setOnClickListener { article?.let{listener.onClick(it)} }
         }
 
         return convertView2!!

@@ -1,7 +1,6 @@
 package dev.dextra.newsapp.base
 
 import android.app.Dialog
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
@@ -11,10 +10,13 @@ import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import dev.dextra.newsapp.R
-import kotlinx.android.synthetic.main.empty_state.*
-import kotlinx.android.synthetic.main.empty_state.view.*
-import kotlinx.android.synthetic.main.error_state.*
-import kotlinx.android.synthetic.main.error_state.view.*
+import kotlinx.android.synthetic.main.empty_state.empty_state
+import kotlinx.android.synthetic.main.empty_state.view.empty_state_subtitle
+import kotlinx.android.synthetic.main.empty_state.view.empty_state_title
+import kotlinx.android.synthetic.main.error_state.error_state
+import kotlinx.android.synthetic.main.error_state.view.error_state_retry
+import kotlinx.android.synthetic.main.error_state.view.error_state_subtitle
+import kotlinx.android.synthetic.main.error_state.view.error_state_title
 
 abstract class BaseListActivity : AppCompatActivity() {
 
@@ -48,7 +50,7 @@ abstract class BaseListActivity : AppCompatActivity() {
 
     private var loadingDialog: Dialog? = null
 
-    fun showLoading(context: Context) {
+    fun showLoading() {
         if (loadingDialog == null) {
             initDialog()
         }
@@ -86,7 +88,7 @@ abstract class BaseListActivity : AppCompatActivity() {
 
     protected val networkStateObserver = Observer<NetworkState> { networkState ->
         if (NetworkState.RUNNING == networkState) {
-            showLoading(this)
+            showLoading()
         } else {
             hideLoading()
         }

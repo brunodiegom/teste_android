@@ -52,7 +52,7 @@ class NewsActivity : AppCompatActivity() {
             loading = Dialog(this)
             loading?.apply {
                 requestWindowFeature(Window.FEATURE_NO_TITLE)
-                window.setBackgroundDrawableResource(android.R.color.transparent)
+                window?.setBackgroundDrawableResource(android.R.color.transparent)
                 setContentView(R.layout.dialog_loading)
             }
         }

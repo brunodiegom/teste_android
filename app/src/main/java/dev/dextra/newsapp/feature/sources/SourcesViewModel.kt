@@ -4,24 +4,31 @@ import androidx.lifecycle.MutableLiveData
 import dev.dextra.newsapp.api.model.Source
 import dev.dextra.newsapp.api.model.enums.Category
 import dev.dextra.newsapp.api.model.enums.Country
+import dev.dextra.newsapp.api.model.extension.getValue
 import dev.dextra.newsapp.api.repository.NewsRepository
 import dev.dextra.newsapp.base.BaseViewModel
 import dev.dextra.newsapp.base.NetworkState
+import kotlin.properties.Delegates.observable
 
 class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewModel() {
 
     val sources = MutableLiveData<List<Source>>()
     val networkState = MutableLiveData<NetworkState>()
 
-    private var selectedCountry: Country? = null
-    private var selectedCategory: Category? = null
+    var selectedCountry: Country by observable(Country.ALL, { _, oldValue, newValue ->
+        if (oldValue != newValue) loadSources()
+    })
+
+    var selectedCategory: Category by observable(Category.ALL, { _, oldValue, newValue ->
+        if (oldValue != newValue) loadSources()
+    })
 
     fun loadSources() {
         networkState.postValue(NetworkState.RUNNING)
         addDisposable(
             newsRepository.getSources(
-                selectedCountry!!.name.toLowerCase(),
-                selectedCategory!!.name.toLowerCase()
+                selectedCountry.getValue(),
+                selectedCategory.getValue()
             ).subscribe({
                 sources.postValue(it.sources)
                 if (it.sources.isEmpty()) {
@@ -33,17 +40,5 @@ class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewMod
                 networkState.postValue(NetworkState.ERROR)
             })
         )
-    }
-
-    fun changeCountry(country: Country?) {
-        if (Country.ALL.equals(country)) selectedCountry = null
-        else selectedCountry = country
-        loadSources()
-    }
-
-    fun changeCategory(category: Category) {
-        if (Category.ALL.equals(category)) selectedCategory = null
-        else selectedCategory = category
-        loadSources()
     }
 }

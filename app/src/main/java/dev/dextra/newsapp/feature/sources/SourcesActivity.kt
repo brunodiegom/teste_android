@@ -21,11 +21,19 @@ import dev.dextra.newsapp.feature.news.NEWS_ACTIVITY_SOURCE
 import dev.dextra.newsapp.feature.news.NewsActivity
 import dev.dextra.newsapp.feature.sources.adapter.CustomArrayAdapter
 import dev.dextra.newsapp.feature.sources.adapter.SourcesListAdapter
-import kotlinx.android.synthetic.main.activity_sources.*
-import org.koin.android.ext.android.inject
+import kotlinx.android.synthetic.main.activity_sources.app_bar
+import kotlinx.android.synthetic.main.activity_sources.category_select
+import kotlinx.android.synthetic.main.activity_sources.category_select_layout
+import kotlinx.android.synthetic.main.activity_sources.country_select
+import kotlinx.android.synthetic.main.activity_sources.country_select_layout
+import kotlinx.android.synthetic.main.activity_sources.sources_filters
+import kotlinx.android.synthetic.main.activity_sources.sources_list
+import org.koin.android.viewmodel.ext.android.viewModel
 
 
 class SourcesActivity : BaseListActivity(), SourcesListAdapter.SourceListAdapterItemListener {
+
+    private val sourcesViewModel: SourcesViewModel by viewModel()
 
     override val emptyStateTitle: Int = R.string.empty_state_title_source
     override val emptyStateSubTitle: Int = R.string.empty_state_subtitle_source
@@ -33,8 +41,6 @@ class SourcesActivity : BaseListActivity(), SourcesListAdapter.SourceListAdapter
     override val errorStateSubTitle: Int = R.string.error_state_subtitle_source
     override val mainList: View
         get() = sources_list
-
-    val sourcesViewModel: SourcesViewModel by inject()
 
     private var viewAdapter: SourcesListAdapter = SourcesListAdapter(this)
     private var viewManager: RecyclerView.LayoutManager = GridLayoutManager(this, 1)
@@ -84,10 +90,10 @@ class SourcesActivity : BaseListActivity(), SourcesListAdapter.SourceListAdapter
         )
         country_select.setAdapter(countryAdapter)
         country_select.keyListener = null
-        country_select.setOnItemClickListener { parent, view, position, id ->
+        country_select.setOnItemClickListener { parent, _, position, id ->
             val item = parent.getItemAtPosition(position)
             if (item is Country) {
-                sourcesViewModel.changeCountry(item)
+                sourcesViewModel.selectedCountry = item
             }
         }
 
@@ -99,10 +105,10 @@ class SourcesActivity : BaseListActivity(), SourcesListAdapter.SourceListAdapter
             )
         )
         category_select.keyListener = null
-        category_select.setOnItemClickListener { parent, view, position, id ->
+        category_select.setOnItemClickListener { parent, _, position, _ ->
             val item = parent.getItemAtPosition(position)
             if (item is Category) {
-                sourcesViewModel.changeCategory(item)
+                sourcesViewModel.selectedCategory = item
             }
         }
     }
