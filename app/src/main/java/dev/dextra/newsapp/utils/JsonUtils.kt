@@ -11,7 +11,7 @@ object JsonUtils {
 
     fun getGson(): Gson {
 
-        return gson?:let {
+        return gson ?: let {
             val gsonBuilder = GsonBuilder()
                 .excludeFieldsWithModifiers(
                     Modifier.TRANSIENT,

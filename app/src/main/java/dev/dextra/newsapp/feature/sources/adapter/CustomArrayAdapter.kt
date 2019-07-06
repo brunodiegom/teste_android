@@ -16,11 +16,10 @@ class CustomArrayAdapter<T>(context: Context, resource: Int, objects: MutableLis
 
         val item = getItem(position)
 
-        if(item is BaseDataEnum && view is TextView){
+        if (item is BaseDataEnum && view is TextView) {
             view.text = context.getText(item.getRes())
         }
 
         return view
     }
-
 }

@@ -4,7 +4,6 @@ import dev.dextra.newsapp.api.model.Source
 import dev.dextra.newsapp.api.repository.NewsRepository
 import dev.dextra.newsapp.base.BaseViewModel
 
-
 class NewsViewModel(
     private val newsRepository: NewsRepository,
     private val newsActivity: NewsActivity

@@ -3,9 +3,9 @@ package dev.dextra.newsapp.components
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class LoadPageScrollListener(private val loadPageScrollLoadMoreListener: LoadPageScrollLoadMoreListener) : RecyclerView.OnScrollListener() {
+class LoadPageScrollListener(private val loadPageScrollLoadMoreListener: LoadPageScrollLoadMoreListener) :
+    RecyclerView.OnScrollListener() {
 
-    private val visibleThreshold = 5
     private var currentPage = 1
     private var previousTotalItemCount = 0
     private var loading = true
@@ -14,7 +14,7 @@ class LoadPageScrollListener(private val loadPageScrollLoadMoreListener: LoadPag
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
         val layoutManager = recyclerView.layoutManager
-        if(layoutManager is LinearLayoutManager){
+        if (layoutManager is LinearLayoutManager) {
             val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
 
             val totalItemCount = layoutManager.getItemCount()
@@ -32,13 +32,12 @@ class LoadPageScrollListener(private val loadPageScrollLoadMoreListener: LoadPag
                 previousTotalItemCount = totalItemCount
             }
 
-            if (!loading && lastVisibleItemPosition + visibleThreshold > totalItemCount) {
+            if (!loading && lastVisibleItemPosition + VISIBLE_THRESHOLD > totalItemCount) {
                 currentPage++
                 loadPageScrollLoadMoreListener.onLoadMore(currentPage, totalItemCount, recyclerView)
                 loading = true
             }
         }
-
     }
 
     interface LoadPageScrollLoadMoreListener {
@@ -48,7 +47,9 @@ class LoadPageScrollListener(private val loadPageScrollLoadMoreListener: LoadPag
             totalItemCount: Int,
             recyclerView: RecyclerView
         )
-
     }
 
+    companion object {
+        private const val VISIBLE_THRESHOLD = 5
+    }
 }

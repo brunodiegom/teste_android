@@ -11,13 +11,12 @@ open class BaseTest(private val instrumented: Boolean = false) {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Before
-    fun setup(){
+    fun setup() {
         TestSuite.init(instrumented)
     }
 
     @After
-    fun clear(){
+    fun clear() {
         TestSuite.clear()
     }
-
 }

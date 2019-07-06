@@ -3,7 +3,6 @@ package dev.dextra.newsapp.api.model
 import androidx.recyclerview.widget.DiffUtil
 import com.google.gson.annotations.SerializedName
 
-
 data class Article(
     @SerializedName("author")
     val author: String,
@@ -32,7 +31,6 @@ data class Article(
             override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
                 return oldItem == newItem
             }
-
         }
     }
 }

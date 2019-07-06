@@ -10,12 +10,11 @@ import dev.dextra.newsapp.base.NetworkState
 import dev.dextra.newsapp.base.TestSuite
 import dev.dextra.newsapp.base.mock.endpoint.ResponseHandler
 import dev.dextra.newsapp.utils.JsonUtils
-import junit.framework.Assert.assertEquals
 import okhttp3.Request
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.koin.test.get
-
 
 class SourcesViewModelTest : BaseTest() {
 
@@ -70,16 +69,15 @@ class SourcesViewModelTest : BaseTest() {
             }
         }).apply()
 
-        viewModel.changeCountry(Country.BR)
+        viewModel.selectedCountry = Country.BR
 
         assert(viewModel.sources.value?.size == 0)
         assertEquals(NetworkState.EMPTY, viewModel.networkState.value)
 
-        viewModel.changeCountry(Country.ALL)
+        viewModel.selectedCountry = Country.ALL
 
         assert(viewModel.sources.value?.size == 136)
         assertEquals(NetworkState.SUCCESS, viewModel.networkState.value)
-
     }
 
     @Test
@@ -92,15 +90,14 @@ class SourcesViewModelTest : BaseTest() {
             }
         }).apply()
 
-        viewModel.changeCategory(Category.BUSINESS)
+        viewModel.selectedCategory = Category.BUSINESS
 
         assert(viewModel.sources.value?.size == 0)
         assertEquals(NetworkState.EMPTY, viewModel.networkState.value)
 
-        viewModel.changeCategory(Category.ALL)
+        viewModel.selectedCategory = Category.ALL
 
         assert(viewModel.sources.value?.size == 136)
         assertEquals(NetworkState.SUCCESS, viewModel.networkState.value)
-
     }
 }

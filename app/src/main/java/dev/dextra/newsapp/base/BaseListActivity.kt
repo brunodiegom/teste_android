@@ -59,7 +59,7 @@ abstract class BaseListActivity : AppCompatActivity() {
         loadingDialog?.apply {
             requestWindowFeature(Window.FEATURE_NO_TITLE)
             setCancelable(false)
-            window.setBackgroundDrawableResource(android.R.color.transparent)
+            window?.setBackgroundDrawableResource(android.R.color.transparent)
             setContentView(R.layout.dialog_loading)
         }
     }

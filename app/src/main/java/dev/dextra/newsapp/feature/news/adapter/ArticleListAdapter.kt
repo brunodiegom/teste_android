@@ -14,12 +14,13 @@ import kotlinx.android.synthetic.main.item_article.view.article_description
 import kotlinx.android.synthetic.main.item_article.view.article_name
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 class ArticleListAdapter(
     context: Context,
     val listener: NewsActivity,
-    articles: List<Article>) : ArrayAdapter<Article>(context, 0, articles) {
+    articles: List<Article>
+) : ArrayAdapter<Article>(context, 0, articles) {
 
     private val dateFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.SHORT)
     private val parseFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
@@ -39,7 +40,7 @@ class ArticleListAdapter(
             convertView2.rootView.article_description.text = article?.description
             convertView2.rootView.article_author.text = article?.author
             convertView2.rootView.article_date.text = dateFormat.format(parseFormat.parse(article?.publishedAt))
-            convertView2.setOnClickListener { article?.let{listener.onClick(it)} }
+            convertView2.setOnClickListener { article?.let { listener.onClick(it) } }
         }
 
         return convertView2!!

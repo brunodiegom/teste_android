@@ -23,7 +23,8 @@
             android:layout_height="@dimen/source_image_size"
             android:layout_gravity="center"
             android:adjustViewBounds="true"
-            tools:src="@drawable/placeholder_image" />
+            tools:src="@drawable/placeholder_image"
+            tools:ignore="ContentDescription" />
 
         <LinearLayout
             android:layout_width="0dp"

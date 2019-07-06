@@ -4,16 +4,21 @@ import android.util.Log
 import dev.dextra.newsapp.base.FileUtils
 import dev.dextra.newsapp.base.mock.endpoint.EndpointMock
 import dev.dextra.newsapp.base.repository.EndpointService
-import okhttp3.*
-import java.util.*
+import okhttp3.Interceptor
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.ResponseBody
 
 class MockedEndpointService : EndpointService() {
 
     private val JSON_MEDIA_TYPE = MediaType.parse("application/json")
     private val mockedEndpoints = HashMap<String, EndpointMock>()
 
-    //we override the get builder method and use an interceptor
-    //so instead of getting the data from the api it's going to load the data from JSON files
+    // we override the get builder method and use an interceptor
+    // so instead of getting the data from the api it's going to load the data from JSON files
     override fun getBuilder(): OkHttpClient.Builder {
         val builder = super.getBuilder()
         builder.addInterceptor(mockInterceptor())
@@ -48,7 +53,7 @@ class MockedEndpointService : EndpointService() {
         return path
     }
 
-    //custom responses are dynamic mocks, you can create it in the test code
+    // custom responses are dynamic mocks, you can create it in the test code
     private fun customResponse(chain: Interceptor.Chain, mock: EndpointMock): Response {
         val builder = defaultBuilder(chain)
 
@@ -64,7 +69,7 @@ class MockedEndpointService : EndpointService() {
             .build()
     }
 
-    //default response is getting the response from JSON files
+    // default response is getting the response from JSON files
     private fun defaultResponse(chain: Interceptor.Chain, endpoint: String): Response {
         val builder = defaultBuilder(chain)
 

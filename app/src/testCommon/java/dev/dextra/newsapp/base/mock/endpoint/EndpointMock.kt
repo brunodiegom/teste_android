@@ -4,7 +4,9 @@ import dev.dextra.newsapp.base.mock.MockedEndpointService
 import okhttp3.Request
 import retrofit2.HttpException
 
-//this is the object which mocks an URL
+/**
+ * This is the object which mocks an URL
+ */
 class EndpointMock(val url: String, val endpointService: MockedEndpointService?) {
     protected var responseHandler: ResponseHandler? = null
     protected var response: String? = null
@@ -29,25 +31,33 @@ class EndpointMock(val url: String, val endpointService: MockedEndpointService?)
         return this
     }
 
-    //the response code this mock should send
+    /**
+     * The response code this mock should send
+     */
     fun code(code: Int): EndpointMock {
         this.code = code
         return this
     }
 
-    //the response body this mock should send
+    /**
+     * The response body this mock should send
+     */
     fun body(response: String): EndpointMock {
         this.response = response
         return this
     }
 
-    //a handler to mock dynamically with multiple cases
+    /**
+     * A handler to mock dynamically with multiple cases
+     */
     fun body(handler: ResponseHandler): EndpointMock {
         this.responseHandler = handler
         return this
     }
 
-    //set the EndpointMock and make it active
+    /**
+     * Set the EndpointMock and make it active
+     */
     fun apply() {
         endpointService?.let {
             var path = url
@@ -56,7 +66,6 @@ class EndpointMock(val url: String, val endpointService: MockedEndpointService?)
             }
             endpointService.addMockedEndpoint(path, this)
         } ?: throw RuntimeException("EndpointService not mocked!")
-
     }
 
     companion object {

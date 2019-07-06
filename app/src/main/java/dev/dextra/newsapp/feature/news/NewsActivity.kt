@@ -12,8 +12,7 @@ import dev.dextra.newsapp.api.model.Source
 import dev.dextra.newsapp.api.repository.NewsRepository
 import dev.dextra.newsapp.base.repository.EndpointService
 import dev.dextra.newsapp.feature.news.adapter.ArticleListAdapter
-import kotlinx.android.synthetic.main.activity_news.*
-
+import kotlinx.android.synthetic.main.activity_news.news_list
 
 const val NEWS_ACTIVITY_SOURCE = "NEWS_ACTIVITY_SOURCE"
 
@@ -29,9 +28,7 @@ class NewsActivity : AppCompatActivity() {
 
             loadNews(source)
         }
-
         super.onCreate(savedInstanceState)
-
     }
 
     private fun loadNews(source: Source) {

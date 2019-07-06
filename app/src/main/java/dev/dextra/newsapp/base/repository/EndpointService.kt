@@ -10,7 +10,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.*
 
 open class EndpointService {
 
@@ -18,7 +17,7 @@ open class EndpointService {
     private val services = HashMap<Class<*>, Any?>()
     private var httpClient: OkHttpClient? = null
 
-    //configure retrofit
+    // configure retrofit
     private fun getRetrofit(): Retrofit {
         return retrofit ?: let {
 
@@ -53,7 +52,7 @@ open class EndpointService {
         return builder
     }
 
-    //add the API_KEY header
+    // add the API_KEY header
     private fun addHeaders(chain: Interceptor.Chain): Response {
         var request = chain.request()
         request = request.newBuilder().addHeader(API_KEY_HEADER_NAME, API_KEY).build()

@@ -8,7 +8,10 @@ import com.squareup.picasso.Picasso
 import dev.dextra.newsapp.ICON_LOCATOR_URL
 import dev.dextra.newsapp.R
 import dev.dextra.newsapp.api.model.Source
-import kotlinx.android.synthetic.main.item_source.view.*
+import kotlinx.android.synthetic.main.item_source.view.source_description
+import kotlinx.android.synthetic.main.item_source.view.source_image
+import kotlinx.android.synthetic.main.item_source.view.source_link
+import kotlinx.android.synthetic.main.item_source.view.source_name
 
 class SourcesListAdapter(val listener: SourceListAdapterItemListener) :
     RecyclerView.Adapter<SourcesListAdapter.SourcesListAdapterViewHolder>() {
@@ -51,10 +54,6 @@ class SourcesListAdapter(val listener: SourceListAdapterItemListener) :
     class SourcesListAdapterViewHolder(val view: View) : RecyclerView.ViewHolder(view)
 
     interface SourceListAdapterItemListener {
-
         fun onClick(source: Source)
-
     }
-
-
 }
