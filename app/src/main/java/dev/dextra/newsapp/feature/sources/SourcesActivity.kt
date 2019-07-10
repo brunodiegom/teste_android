@@ -75,9 +75,7 @@ class SourcesActivity : AppCompatActivity(), SourcesListAdapter.SourceListAdapte
             it.sources.observe(this, Observer {
                 viewAdapter.apply {
                     clear()
-                    notifyDataSetChanged()
                     add(it)
-                    notifyDataSetChanged()
                     sources_list.scrollToPosition(0)
                     app_bar.setExpanded(true)
                 }

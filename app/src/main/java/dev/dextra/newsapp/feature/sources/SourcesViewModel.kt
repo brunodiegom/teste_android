@@ -19,7 +19,7 @@ import kotlin.properties.Delegates.observable
 
 /**
  * [BaseViewModel] that provides the [Source] content to be presented on View layer.
- * As the current status of the [NetworkState]
+ * As well as, the current status of the [NetworkState]
  */
 class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewModel() {
 
@@ -107,7 +107,7 @@ class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewMod
 
     private fun hasMessage(networkState: NetworkState) = hasError(networkState) || hasEmptyList(networkState)
 
-    private fun shouldShowList(sourceList: List<Source>) = sourceList.isNotEmpty()
+    private fun shouldShowList(list: List<Source>) = list.isNotEmpty()
 
     private fun getErrorTitle(networkState: NetworkState): Int? = when (networkState) {
         ERROR -> R.string.error_state_title_source
@@ -121,7 +121,7 @@ class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewMod
         else -> null
     }
 
-    private fun getResponseState(sources: List<Source>) = if (sources.isEmpty()) EMPTY else SUCCESS
+    private fun getResponseState(list: List<Source>) = if (list.isEmpty()) EMPTY else SUCCESS
 
     private fun setState(state: NetworkState) {
         _networkState.postValue(state)

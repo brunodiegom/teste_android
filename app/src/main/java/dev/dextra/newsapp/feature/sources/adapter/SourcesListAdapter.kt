@@ -13,10 +13,13 @@ import kotlinx.android.synthetic.main.item_source.view.source_image
 import kotlinx.android.synthetic.main.item_source.view.source_link
 import kotlinx.android.synthetic.main.item_source.view.source_name
 
-class SourcesListAdapter(val listener: SourceListAdapterItemListener) :
+/**
+ * [RecyclerView.Adapter] to apply the [Source] content on the list.
+ */
+class SourcesListAdapter(private val listener: SourceListAdapterItemListener) :
     RecyclerView.Adapter<SourcesListAdapter.SourcesListAdapterViewHolder>() {
 
-    private val dataset: ArrayList<Source> = ArrayList()
+    private val dataSet: ArrayList<Source> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SourcesListAdapterViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -24,36 +27,52 @@ class SourcesListAdapter(val listener: SourceListAdapterItemListener) :
         return SourcesListAdapterViewHolder(view)
     }
 
-    override fun getItemCount(): Int = dataset.size
+    override fun getItemCount(): Int = dataSet.size
 
     override fun onBindViewHolder(holder: SourcesListAdapterViewHolder, position: Int) {
-        val source = dataset[position]
-
-        holder.view.setOnClickListener { listener.onClick(source) }
-
-        holder.view.source_name.text = source.name
-        holder.view.source_description.text = source.description
-        holder.view.source_link.text = source.url
-
-        Picasso.get()
-            .load(ICON_LOCATOR_URL.format(source.url))
-            .fit()
-            .placeholder(R.drawable.placeholder_image)
-            .error(R.drawable.placeholder_image)
-            .into(holder.view.source_image)
+        val source = dataSet[position]
+        holder.view.apply {
+            setOnClickListener { listener.onClick(source) }
+            source_name.text = source.name
+            source_description.text = source.description
+            source_link.text = source.url
+            Picasso.get()
+                .load(ICON_LOCATOR_URL.format(source.url))
+                .fit()
+                .placeholder(R.drawable.placeholder_image)
+                .error(R.drawable.placeholder_image)
+                .into(source_image)
+        }
     }
 
+    /**
+     * Add the [Source] on adapter.
+     */
     fun add(sources: List<Source>) {
-        dataset.addAll(sources)
+        dataSet.addAll(sources)
+        notifyDataSetChanged()
     }
 
+    /**
+     * Remove all [Source] from adapter.
+     */
     fun clear() {
-        dataset.clear()
+        dataSet.clear()
+        notifyDataSetChanged()
     }
 
+    /**
+     * [RecyclerView.ViewHolder] to contain the adapter view.
+     */
     class SourcesListAdapterViewHolder(val view: View) : RecyclerView.ViewHolder(view)
 
+    /**
+     * Item selection interface.
+     */
     interface SourceListAdapterItemListener {
+        /**
+         * How implements this method will know when an [Source] was selected, and which one,
+         */
         fun onClick(source: Source)
     }
 }
