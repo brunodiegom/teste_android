@@ -3,28 +3,30 @@ package dev.dextra.newsapp.feature.sources
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
 import dev.dextra.newsapp.R
 import dev.dextra.newsapp.api.model.Source
 import dev.dextra.newsapp.api.model.enums.Category
 import dev.dextra.newsapp.api.model.enums.Country
 import dev.dextra.newsapp.api.model.extension.getSourceValue
 import dev.dextra.newsapp.api.repository.NewsRepository
-import dev.dextra.newsapp.base.BaseViewModel
 import dev.dextra.newsapp.base.NetworkState
 import dev.dextra.newsapp.base.NetworkState.EMPTY
 import dev.dextra.newsapp.base.NetworkState.ERROR
 import dev.dextra.newsapp.base.NetworkState.RUNNING
 import dev.dextra.newsapp.base.NetworkState.SUCCESS
+import io.reactivex.disposables.CompositeDisposable
 import kotlin.properties.Delegates.observable
 
 /**
- * [BaseViewModel] that provides the [Source] content to be presented on View layer.
+ * [ViewModel] that provides the [Source] content to be presented on View layer.
  * As well as, the current status of the [NetworkState]
  */
-class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewModel() {
+class SourcesViewModel(private val newsRepository: NewsRepository) : ViewModel() {
 
     private val _sources = MutableLiveData<List<Source>>()
     private val _networkState = MutableLiveData<NetworkState>()
+    private val disposable = CompositeDisposable()
 
     /**
      * Provides a [Source] list to be presented at the View.
@@ -58,7 +60,7 @@ class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewMod
     /**
      * Indicates when the [Source] list must be shown.
      */
-    var shouldShowList: LiveData<Boolean> = Transformations.map(sources, this::shouldShowList)
+    var shouldShowList: LiveData<Boolean> = Transformations.map(networkState, this::shouldShowList)
 
     /**
      * Indicates when the retry button must be shown.
@@ -86,7 +88,7 @@ class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewMod
      */
     fun loadSources() {
         setState(RUNNING)
-        addDisposable(
+        disposable.add(
             newsRepository.getSources(
                 selectedCountry.getSourceValue(),
                 selectedCategory.getSourceValue()
@@ -99,6 +101,11 @@ class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewMod
         )
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        disposable.dispose()
+    }
+
     private fun isLoading(networkState: NetworkState) = networkState == RUNNING
 
     private fun hasError(networkState: NetworkState) = networkState == ERROR
@@ -107,7 +114,7 @@ class SourcesViewModel(private val newsRepository: NewsRepository) : BaseViewMod
 
     private fun hasMessage(networkState: NetworkState) = hasError(networkState) || hasEmptyList(networkState)
 
-    private fun shouldShowList(list: List<Source>) = list.isNotEmpty()
+    private fun shouldShowList(networkState: NetworkState) = networkState == SUCCESS || networkState == RUNNING
 
     private fun getErrorTitle(networkState: NetworkState): Int? = when (networkState) {
         ERROR -> R.string.error_state_title_source

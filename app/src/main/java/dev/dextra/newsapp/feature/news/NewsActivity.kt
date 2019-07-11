@@ -8,16 +8,18 @@ import android.view.View
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import dev.dextra.newsapp.R
 import dev.dextra.newsapp.api.model.Article
 import dev.dextra.newsapp.api.model.Source
+import dev.dextra.newsapp.api.repository.NewsRepository
 import dev.dextra.newsapp.feature.news.adapter.ArticleListAdapter
 import kotlinx.android.synthetic.main.activity_news.news_list
 import kotlinx.android.synthetic.main.error_state.error_state
 import kotlinx.android.synthetic.main.error_state.error_state_retry
 import kotlinx.android.synthetic.main.error_state.error_state_subtitle
 import kotlinx.android.synthetic.main.error_state.error_state_title
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.android.ext.android.inject
 
 const val NEWS_ACTIVITY_SOURCE = "NEWS_ACTIVITY_SOURCE"
 
@@ -28,9 +30,11 @@ const val NEWS_ACTIVITY_SOURCE = "NEWS_ACTIVITY_SOURCE"
  */
 class NewsActivity : AppCompatActivity(), ArticleListAdapter.ArticleListAdapterItemListener {
 
-    private val newsViewModel: NewsViewModel by viewModel()
+    private lateinit var newsViewModel: NewsViewModel
 
     private var viewAdapter: ArticleListAdapter = ArticleListAdapter(this)
+
+    private val newsRepository: NewsRepository by inject()
 
     private val loadingDialog by lazy {
         Dialog(this).apply {
@@ -47,8 +51,10 @@ class NewsActivity : AppCompatActivity(), ArticleListAdapter.ArticleListAdapterI
 
         (intent?.extras?.getSerializable(NEWS_ACTIVITY_SOURCE) as Source).let {
             title = it.name
-            setupData(it)
+            newsViewModel =
+                ViewModelProviders.of(this, NewsViewModelFactory(newsRepository, it)).get(NewsViewModel::class.java)
         }
+        setupData()
         setupView()
     }
 
@@ -64,18 +70,13 @@ class NewsActivity : AppCompatActivity(), ArticleListAdapter.ArticleListAdapterI
         setupErrorMessage()
     }
 
-    private fun setupData(source: Source) {
-        newsViewModel.also {
-            it.articles.observe(this, Observer {
-                viewAdapter.apply {
-                    clear()
-                    add(it)
-                    news_list.scrollToPosition(0)
-                }
-            })
-            it.configureSource(source)
-            it.loadNews()
-        }
+    private fun setupData() {
+        newsViewModel.articles.observe(this, Observer {
+            viewAdapter.apply {
+                submitList(it)
+            }
+            news_list.scrollToPosition(0)
+        })
     }
 
     private fun setupErrorMessage() {
@@ -107,7 +108,9 @@ class NewsActivity : AppCompatActivity(), ArticleListAdapter.ArticleListAdapterI
         newsViewModel.isRetryAllowed.observe(this, Observer<Boolean> {
             error_state_retry.visibility = if (it) View.VISIBLE else View.GONE
         })
-        error_state_retry.setOnClickListener { executeRetry() }
+        error_state_retry.setOnClickListener {
+            // TODO: Implement retry
+        }
     }
 
     private fun setupLoading() {
@@ -120,13 +123,6 @@ class NewsActivity : AppCompatActivity(), ArticleListAdapter.ArticleListAdapterI
         newsViewModel.shouldShowList.observe(this, Observer<Boolean> {
             news_list.visibility = if (it) View.VISIBLE else View.GONE
         })
-        news_list.apply {
-            setHasFixedSize(true)
-            adapter = viewAdapter
-        }
-    }
-
-    private fun executeRetry() {
-        newsViewModel.loadNews()
+        news_list.adapter = viewAdapter
     }
 }

@@ -1,37 +1,52 @@
 package dev.dextra.newsapp.feature.news
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
 import dev.dextra.newsapp.R
 import dev.dextra.newsapp.api.model.Article
+import dev.dextra.newsapp.api.model.ArticleDataFactory
 import dev.dextra.newsapp.api.model.Source
 import dev.dextra.newsapp.api.repository.NewsRepository
-import dev.dextra.newsapp.base.BaseViewModel
 import dev.dextra.newsapp.base.NetworkState
 import dev.dextra.newsapp.base.NetworkState.EMPTY
 import dev.dextra.newsapp.base.NetworkState.ERROR
 import dev.dextra.newsapp.base.NetworkState.RUNNING
 import dev.dextra.newsapp.base.NetworkState.SUCCESS
+import io.reactivex.disposables.CompositeDisposable
+import java.util.concurrent.Executors
 
 /**
- * [BaseViewModel] that provides the [Article] content to be presented on View layer.
+ * [ViewModel] that provides the [Article] content to be presented on View layer.
  * As well as, the current status of the [NetworkState]
  */
-class NewsViewModel(private val newsRepository: NewsRepository) : BaseViewModel() {
+class NewsViewModel(
+    newsRepository: NewsRepository,
+    source: Source
+) : ViewModel() {
 
-    private val _articles = MutableLiveData<List<Article>>()
-    private val _networkState = MutableLiveData<NetworkState>()
+    private val disposable = CompositeDisposable()
+
+    private val executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE)
+
+    private var dataFactory = ArticleDataFactory(disposable, newsRepository, source)
+
+    private val networkState = Transformations.switchMap(dataFactory.articles) { it.networkState }
+
+    private val config: PagedList.Config = PagedList.Config.Builder()
+        .setPageSize(PAGE_SIZE)
+        .setInitialLoadSizeHint(PAGE_SIZE_HINT)
+        .setEnablePlaceholders(false)
+        .build()
 
     /**
-     * Provides a [Source] list to be presented at the View.
+     * Provides a [Article] list to be presented at the View.
      */
-    val articles: LiveData<List<Article>> = _articles
-
-    /**
-     * Provides the current status of [NetworkState].
-     */
-    val networkState: LiveData<NetworkState> = _networkState
+    val articles: LiveData<PagedList<Article>> = LivePagedListBuilder(dataFactory, config)
+        .setFetchExecutor(executor)
+        .build()
 
     /**
      * Indicates when the server is being accessed.
@@ -46,7 +61,7 @@ class NewsViewModel(private val newsRepository: NewsRepository) : BaseViewModel(
     /**
      * Indicates when the [Source] list must be shown.
      */
-    var shouldShowList: LiveData<Boolean> = Transformations.map(articles, this::shouldShowList)
+    var shouldShowList: LiveData<Boolean> = Transformations.map(networkState, this::shouldShowList)
 
     /**
      * Indicates when the there's a message to be shown.
@@ -64,28 +79,9 @@ class NewsViewModel(private val newsRepository: NewsRepository) : BaseViewModel(
      */
     var errorMessageSubtitle: LiveData<Int?> = Transformations.map(networkState, this::getErrorSubtitle)
 
-    private var source: Source? = null
-
-    /**
-     * Set the [Source] that was selected, using as parameter to load the articles related.
-     */
-    fun configureSource(source: Source) {
-        this.source = source
-    }
-
-    /**
-     * Load the articles from selected [Source].
-     */
-    fun loadNews() {
-        setState(RUNNING)
-        addDisposable(
-            newsRepository.getEverything(
-                source?.id
-            ).subscribe({
-                _articles.postValue(it.articles)
-                setState(getResponseState(it.articles))
-            }, { setState(ERROR) })
-        )
+    override fun onCleared() {
+        super.onCleared()
+        disposable.clear()
     }
 
     private fun isLoading(networkState: NetworkState) = networkState == RUNNING
@@ -96,7 +92,7 @@ class NewsViewModel(private val newsRepository: NewsRepository) : BaseViewModel(
 
     private fun hasMessage(networkState: NetworkState) = hasError(networkState) || hasEmptyList(networkState)
 
-    private fun shouldShowList(list: List<Article>) = list.isNotEmpty()
+    private fun shouldShowList(networkState: NetworkState) = networkState == SUCCESS || networkState == RUNNING
 
     private fun getErrorTitle(networkState: NetworkState): Int? = when (networkState) {
         ERROR -> R.string.error_state_title_source
@@ -110,9 +106,9 @@ class NewsViewModel(private val newsRepository: NewsRepository) : BaseViewModel(
         else -> null
     }
 
-    private fun getResponseState(list: List<Article>) = if (list.isEmpty()) EMPTY else SUCCESS
-
-    private fun setState(state: NetworkState) {
-        _networkState.postValue(state)
+    companion object {
+        private const val PAGE_SIZE = 5
+        private const val PAGE_SIZE_HINT = 9
+        private const val THREAD_POOL_SIZE = 5
     }
 }

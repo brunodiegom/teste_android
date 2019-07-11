@@ -17,9 +17,10 @@
         android:layout_width="@dimen/icon_image_size"
         android:layout_height="@dimen/icon_image_size"
         android:src="@drawable/ic_worldwide_news_bw"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/error_state_subtitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
         tools:ignore="ContentDescription" />
 
     <TextView
@@ -36,11 +37,14 @@
     <TextView
         android:id="@+id/error_state_subtitle"
         style="@style/SubTitle"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/small_margin"
-        app:layout_constraintStart_toStartOf="@id/error_state_image"
+        android:layout_margin="@dimen/small_margin"
+        app:layout_constraintBottom_toTopOf="@id/error_state_retry"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/error_state_image"
+        app:layout_constraintVertical_chainStyle="packed"
         tools:text="@string/error_state_subtitle_source" />
 
     <androidx.appcompat.widget.AppCompatButton
@@ -50,7 +54,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/small_margin"
         android:text="@string/error_state_retry"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/error_state_image"
-        app:layout_constraintTop_toBottomOf="@id/error_state_subtitle" />
+        app:layout_constraintTop_toBottomOf="@id/error_state_subtitle"
+        app:layout_constraintVertical_chainStyle="packed" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -76,9 +76,9 @@ class SourcesActivity : AppCompatActivity(), SourcesListAdapter.SourceListAdapte
                 viewAdapter.apply {
                     clear()
                     add(it)
-                    sources_list.scrollToPosition(0)
-                    app_bar.setExpanded(true)
                 }
+                sources_list.scrollToPosition(0)
+                app_bar.setExpanded(true)
             })
             it.loadSources()
         }
@@ -148,9 +148,6 @@ class SourcesActivity : AppCompatActivity(), SourcesListAdapter.SourceListAdapte
         sourcesViewModel.shouldShowList.observe(this, Observer<Boolean> {
             sources_list.visibility = if (it) VISIBLE else GONE
         })
-        sources_list.apply {
-            setHasFixedSize(true)
-            adapter = viewAdapter
-        }
+        sources_list.adapter = viewAdapter
     }
 }
