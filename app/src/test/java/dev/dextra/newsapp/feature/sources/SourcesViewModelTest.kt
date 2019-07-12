@@ -33,10 +33,6 @@ class SourcesViewModelTest : BaseTest() {
 
         assert(viewModel.sources.value?.size == 136)
         assertEquals(NetworkState.SUCCESS, viewModel.networkState.value)
-
-        viewModel.onCleared()
-
-        assert(viewModel.getDisposables().isEmpty())
     }
 
     @Test
